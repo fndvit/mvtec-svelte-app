@@ -1,7 +1,7 @@
 <script>
 	import Axis from '../common/Axis.svelte';
 	import PointInteractive from '../common/PointInteractive.svelte';
-	import {line, curveStep} from 'd3-shape';
+	import {area, curveStep} from 'd3-shape';
 	import {scaleTime, scaleLinear} from 'd3-scale';
 	import {max, extent, bisector} from 'd3-array'
     
@@ -24,9 +24,10 @@
 		.domain([0, max(data, d => d[key.y])])
 		.range([height - margin.bottom - margin.top, margin.top]);
 
-	$: path = line()
+	$: path = area()
 		.x(d => x(d[key.x]))
-		.y(d => y(d[key.y]))
+		.y0(d => y(0))
+		.y1(d => y(d[key.y]))
 		.curve(curveStep);
 
 	const mouseMove = (m) => {
@@ -47,7 +48,7 @@
 <div class='graphic {layout}' bind:clientWidth={width} bind:clientHeight={height}>
 {#if width}
 <svg xmlns:svg='https://www.w3.org/2000/svg' 
-	viewBox='0 0 {width} {height}'
+	viewBox='0 0 {width - margin.right - margin.left} {height}'
 	{width}
 	{height}
 	role='img'
@@ -62,8 +63,8 @@
 	<g>
 		<path 
 			d={path(data)}
-			stroke={color}
-			fill='none'
+			fill={color}
+			stroke='none'
 		/>
 	</g>
 
