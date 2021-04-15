@@ -2,10 +2,13 @@
 	//Some components
 	import Line from './components/charts/Line.svelte'
 	import Area from './components/charts/Area.svelte'
+	import Bars from './components/charts/Bars.svelte'
 	import Multiline from './components/charts/Multiline.svelte'
 	import Scatter from './components/charts/Scatter.svelte'
+	import ScatterCanvas from './components/charts/ScatterCanvas.svelte'
 	import Mapbox from './components/maps/Mapbox.svelte'
 	import Map from './components/maps/Map.svelte'
+	import Scroller from '@sveltejs/svelte-scroller'
 
 	//Test data
 	import world from './data/world.json';
@@ -18,8 +21,13 @@
 	import { geoWinkel3 } from 'd3-geo-projection';
 	import { scaleQuantize } from 'd3-scale';
 	import {extent} from 'd3-array';
+import { element } from 'svelte/internal'
 	
 	let color = '#5cc6b2';
+
+	let index = 0, offset, progress;
+
+	let scatterStep;
 
 	const loc = new locale('es');
 	const format = {
@@ -34,7 +42,7 @@
 				.rotate([-11, 0])
 				.precision(1);
 
-	$: palette = () => {
+	const palette = () => {
 		const _extent = extent(cases.data, d => d.latest.cases)
 		const max = _extent[0] > _extent[1] ? _extent[0] : _extent[1];
 		const min = _extent[0] < _extent[1] ? _extent[0] : _extent[1];
@@ -46,6 +54,28 @@
 				.nice();
 	}
 
+	const steps = [
+		{center: [-7.889722,42.782222], zoom:7.5},
+		{center: [0,42.782222], zoom:7},
+		{center: [-7.889722,41.782222], zoom:6.5}
+	]
+
+	const points = [...new Array(2500)]
+        .map(d => (
+            {
+				coords: [
+					{ x: Math.random() * 400,
+					y: Math.random() * 400,
+					width: Math.random() * 16,
+					height: Math.random() * 16 },
+					{ x: Math.random() * 400,
+					y: Math.random() * 400,
+					width: Math.random() * 16,
+					height: Math.random() * 16 }
+				]
+        }))
+
+	
 </script>
 
 <main>
@@ -77,6 +107,25 @@
 		layout='col'
 	/>
 
+	<div class='col'>
+		<p>This is an example of how you can do smooth transitions. It uses canvas so you can do a few thousand elements. Instead of the buttons triggering which step is in view, you can use the scroll ...  </p>
+		<button on:click={() => scatterStep = 0}>Arrange like so</button>
+		<button on:click={() => scatterStep = 1}>Rearrange again</button>
+	</div>
+	<ScatterCanvas
+		data={points}
+		layout='wide'
+		step={scatterStep}
+	/>
+
+	<Bars 
+		data={weather}
+		title='Title' desc='Description'
+		key={{x: 'time', y: 'value'}}
+		{color}
+		layout='col'
+	/>
+
 	<Scatter 
 		data={weather3}
 		title='Title' desc='Description'
@@ -86,16 +135,27 @@
 		layout='col'
 	/>
 	
-	<Mapbox 
-		options={
-			{style:'mapbox://styles/fndvit/ckc1oqzq94nh91imn76jqxcha',
-			scrollZoom:false,
-			center: [-7.889722,42.782222],
-			zoom: 6.5}
-		}
-		accessToken='pk.eyJ1IjoiZm5kdml0IiwiYSI6ImNrYzBzYjhkMDBicG4yc2xrbnMzNXVoeDIifQ.mrdvw_7AIeOwa5IgHLaHJg'
-		layout='wide'
-	/>
+	<!-- <Scroller top={0} bottom={1} bind:index bind:offset bind:progress>
+	<div slot="background">
+		<Mapbox 
+			options={
+				{style:'mapbox://styles/fndvit/ckc1oqzq94nh91imn76jqxcha',
+				scrollZoom:false,
+				center: [-7.889722,42.782222],
+				zoom: 6.5}
+			}
+			steps={steps}
+			index={index}
+			accessToken='pk.eyJ1IjoiZm5kdml0IiwiYSI6ImNrYzBzYjhkMDBicG4yc2xrbnMzNXVoeDIifQ.mrdvw_7AIeOwa5IgHLaHJg'
+			layout='fs'
+		/>
+	</div>
+	<div slot="foreground">
+		<section><p class='col'>This is the first section.</p></section>
+		<section><p class='col'>This is the second section.</p></section>
+		<section><p class='col'>This is the third section.</p></section>
+	</div>
+	</Scroller> -->
 
 	<Map 
 		data={cases.data}
@@ -108,12 +168,11 @@
     	legend={{title: '', format: ''}}
 		layout='wide'
 	/>
-
+	
 </main>
 
 <style>
 	main {
-		text-align: center;
 		padding: 1em;
 		margin: 0 auto;
 	}
@@ -122,4 +181,19 @@
 		height:50vh;
 		margin-bottom:3rem;
 	}
+	
+	[slot="foreground"] {
+		pointer-events: none;
+	}
+	
+	[slot="foreground"] section {
+		pointer-events: all;
+	}
+	
+	section {
+		height: 80vh;
+		padding: 1em;
+		margin: 0 0 2em 0;
+	}
+
 </style>

@@ -42,7 +42,7 @@
 </script>
 
 <div class="legend" style="top: {t}px; left: {l}px">
-	<h5>{title}</h5>
+	<p>{title}</p>
 	<ul class="scale" style="width: {width}px">
 	{#each colors as color, i }	
 		<li style="width: {bandWidth[i]}px">
