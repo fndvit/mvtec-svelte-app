@@ -9,6 +9,7 @@
 	import Mapbox from './components/maps/Mapbox.svelte'
 	import Map from './components/maps/Map.svelte'
 	import Scroller from '@sveltejs/svelte-scroller'
+  	import Sankey from './components/charts/Sankey.svelte'
 
 	//Test data
 	import world from './data/world.json';
@@ -16,6 +17,7 @@
 	import weather from './data/weather.json';
 	import weather2 from './data/weather2.json';
 	import weather3 from './data/weather3.json';
+	import sankeydata from './data/sankey-data.js';
 
 	import locale from '@reuters-graphics/d3-locale';
 	import { geoWinkel3 } from 'd3-geo-projection';
@@ -107,6 +109,13 @@
 		key={{x: 'time', y: 'value'}}
 		{format}
 		{color}
+		layout='col'
+	/>
+
+	<Sankey
+		data={sankeydata}
+		colorNodes={d => '#00bbff'}
+		colorLinks={d => '#00bbff35'}
 		layout='col'
 	/>
 
