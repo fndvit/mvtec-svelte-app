@@ -3,11 +3,14 @@
 	import { extent } from 'd3-array'
 	import { scaleLinear } from 'd3-scale'
     import { Delaunay } from 'd3-delaunay'
+	import Circle from './Circle.svelte'
 	import Square from './Square.svelte'
-	
+
 	export let data;
 	export let step = 0;
 	export let layout;
+	export let mark;
+
 	const margin = { top: 10, right: 10, bottom: 25, left: 25 }
 
 	let width, height;
@@ -37,14 +40,24 @@
 	>
 
 		{#each data as d, i}
+			{#if mark === 'circle'}
+			<Circle 
+				x={x(d.coords[step].x)}
+				y={y(d.coords[step].y)} 
+				fill="#00336633"
+				r={d.coords[step].r}
+                stroke={i === picked && "#000"} 
+			/>
+			{:else if mark === 'square'}
 			<Square 
 				x={x(d.coords[step].x)}
 				y={y(d.coords[step].y)} 
 				fill="tomato"
-				width={d.coords[step].width}
 				height={d.coords[step].height}
+				width={d.coords[step].width}
                 stroke={i === picked && "#000"} 
 			/>
+			{/if}
 		{/each}
 	</Canvas>
 </div>

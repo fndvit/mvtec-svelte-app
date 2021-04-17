@@ -21,13 +21,12 @@
 	import { geoWinkel3 } from 'd3-geo-projection';
 	import { scaleQuantize } from 'd3-scale';
 	import {extent} from 'd3-array';
-import { element } from 'svelte/internal'
 	
 	let color = '#5cc6b2';
 
 	let index = 0, offset, progress;
 
-	let scatterStep;
+	let scatterStep, otherStep;
 
 	const loc = new locale('es');
 	const format = {
@@ -75,6 +74,19 @@ import { element } from 'svelte/internal'
 				]
         }))
 
+	const otherPoints = [...new Array(800)]
+        .map(d => (
+            {
+				coords: [
+					{ x: Math.random() * 400,
+					y: Math.random() * 400,
+					r: Math.random() * 16 },
+					{ x: Math.random() * 400,
+					y: Math.random() * 400,
+					r: Math.random() * 16 }
+				]
+        }))
+
 	
 </script>
 
@@ -116,6 +128,19 @@ import { element } from 'svelte/internal'
 		data={points}
 		layout='wide'
 		step={scatterStep}
+		mark='square'
+	/>
+
+	<div class='col'>
+		<p>This is an example of how you can do smooth transitions. It uses canvas so you can do a few thousand elements. Instead of the buttons triggering which step is in view, you can use the scroll ...  </p>
+		<button on:click={() => otherStep = 0}>Arrange like so</button>
+		<button on:click={() => otherStep = 1}>Rearrange again</button>
+	</div>
+	<ScatterCanvas
+		data={otherPoints}
+		layout='wide'
+		step={otherStep}
+		mark='circle'
 	/>
 
 	<Bars 
