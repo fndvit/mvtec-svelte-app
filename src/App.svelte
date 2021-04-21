@@ -43,6 +43,8 @@
 				.rotate([-11, 0])
 				.precision(1);
 
+	console.log(cases)
+
 	const palette = () => {
 		const _extent = extent(cases.data, d => d.latest.cases)
 		const max = _extent[0] > _extent[1] ? _extent[0] : _extent[1];
@@ -198,7 +200,7 @@
 		scale={palette()}
 		projection={projection}
     	join={{data:'geoid', map:'alpha3'}}
-    	value=''
+    	value='latest.cases'
     	legend={{title: '', format: ''}}
 		layout='wide'
 	/>

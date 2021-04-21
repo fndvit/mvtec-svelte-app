@@ -4,7 +4,8 @@
 
 	import { feature, mesh } from 'topojson-client';
 	import { geoPath } from 'd3-geo';
- 	
+	import { get } from 'lodash'
+  	
     export let data;
 	export let map;
 	export let scale;
@@ -27,7 +28,7 @@
 	
 	$: fill = (_id) => {
 		const d = data.find(d => d[join.data] === _id);
-		return (d !== undefined) ? scale(d[value]) : '#E0E0E0';
+		return (d !== undefined) ? scale(get(d, value)) : '#E0E0E0';
 	}
 
 	$: handleHover = (e, _id) => {
